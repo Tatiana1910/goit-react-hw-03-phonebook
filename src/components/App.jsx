@@ -2,6 +2,7 @@ import { GlobalStyle } from './GlobalStyle';
 import { Component } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
+import { nanoid } from 'nanoid';
 import {
   Container,
   Title,
@@ -24,26 +25,43 @@ export class App extends Component {
 
   componentDidMount() {
     // console.log('App componentDidMount');
-    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
 
-    if (savedContacts) {
-      this.setState({ contacts: savedContacts });
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // console.log(prevState);
+
     if (this.state.contacts !== prevState.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
   }
 
-  addContact = newContact => {
-    this.state.contacts.filter(contact => contact.name === newContact.name)
-      .length
-      ? alert(`${newContact.name}: is already in contacts`)
-      : this.setState(prevState => ({
-          contacts: [...prevState.contacts, newContact],
-        }));
+  addContact = (values, { resetForm }) => {
+    let newContact = values;
+
+    const check = this.state.contacts.filter(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    );
+
+    if (check.length) {
+      alert(`${newContact.name} is already in contacts`);
+    } else {
+      newContact.id = nanoid();
+
+      this.setState(prevState => ({
+        contacts: [...prevState.contacts, newContact],
+      }));
+
+      resetForm({
+        name: '',
+        number: '',
+      });
+    }
   };
 
   deleteContact = contactId => {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Formik, ErrorMessage } from 'formik';
 import { object, string } from 'yup';
-import { nanoid } from 'nanoid';
+// import { nanoid } from 'nanoid';
 import {
   StyledForm,
   StyledLabel,
@@ -38,17 +38,13 @@ const initialValues = {
 };
 
 export const ContactForm = ({ onSubmit }) => {
-  const handleSubmit = (values, { resetForm }) => {
-    onSubmit({ ...values, id: nanoid() });
-
-    resetForm();
-  };
-
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={schema}
-      onSubmit={handleSubmit}
+      onSubmit={(values, actions) => {
+        onSubmit(values, actions);
+      }}
     >
       <StyledForm autoComplete=" off">
         <StyledLabel>
